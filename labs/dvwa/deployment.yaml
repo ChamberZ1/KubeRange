@@ -1,0 +1,20 @@
+# deploys DVWA 
+apiVersion: apps/v1  # specifies the API version for the Deployment resource
+kind: Deployment  # specifies type of resource
+metadata:
+  name: dvwa
+spec:
+  replicas: 1  # number of copies the pod to run
+  selector:
+    matchLabels:
+      app: dvwa  # label selector to identify the pods managed by this deployment
+  template:
+    metadata:
+      labels:
+        app: dvwa  # template for creating pods. Labels them app: dvwa so the selector above can find them.
+    spec:  # container specification for the pod
+      containers:  
+      - name: dvwa
+        image: vulnerables/web-dvwa  # Docker image from Docker Hub to use for the container. 
+        ports:
+        - containerPort: 80

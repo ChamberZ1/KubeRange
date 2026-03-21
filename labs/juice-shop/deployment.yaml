@@ -1,0 +1,20 @@
+# deploys Juice Shop
+apiVersion: apps/v1  # specifies the API version for the Deployment resource
+kind: Deployment  # specifies type of resource
+metadata:
+  name: juice-shop
+spec:
+  replicas: 1  # number of copies the pod to run
+  selector:
+    matchLabels:
+      app: juice-shop  # label selector to identify the pods managed by this deployment
+  template:
+    metadata:
+      labels:
+        app: juice-shop  # template for creating pods. Labels them app: juice-shop so the selector above can find them.
+    spec:  # container specification for the pod
+      containers:
+      - name: juice-shop
+        image: bkimminich/juice-shop  # Docker image from Docker Hub to use for the container.
+        ports:
+        - containerPort: 3000

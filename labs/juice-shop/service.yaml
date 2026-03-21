@@ -1,0 +1,21 @@
+# exposes the Juice Shop deployment as a network service
+apiVersion: v1  # specifies the API version for the Service resource
+kind: Service  # specifies type of resource
+metadata:
+  name: juice-shop-service
+spec:
+  selector:
+    app: juice-shop  # matches pods with this label so the service knows which pods to route traffic to
+  ports:
+  - protocol: TCP  # protocol used for the port mapping
+    port: 3000  # port the service listens on
+    targetPort: 3000  # port on the pod to forward traffic to
+  type: NodePort  # exposes the service on each node's IP at a static port, making it accessible from outside the cluster
+
+# kubectl apply -f labs/juice-shop/deployment.yaml
+# kubectl apply -f labs/juice-shop/service.yaml
+# kubectl get pods
+# minikube service juice-shop-service --url
+
+# kubectl delete -f labs/juice-shop/deployment.yaml
+# kubectl delete -f labs/juice-shop/service.yaml
