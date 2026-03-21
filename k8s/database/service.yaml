@@ -10,3 +10,14 @@ spec:
   - protocol: TCP  # protocol used for the port mapping
     port: 5432  # port the service listens on
     targetPort: 5432  # port on the pod to forward traffic to (default PostgreSQL port)
+
+# kubectl apply -f k8s/database/persistent-volume.yaml
+# kubectl apply -f k8s/database/deployment.yaml
+# kubectl apply -f k8s/database/service.yaml
+# kubectl apply -f k8s/database/secret.yaml
+# kubectl apply -f k8s/database/configmap.yaml
+# kubectl get pods
+# kubectl get services
+
+# Connect to PostgresSQL pod:
+# kubectl exec -it [pod_name] -- psql -U kuberange_user -d kuberange

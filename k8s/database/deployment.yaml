@@ -31,7 +31,12 @@ spec:
         volumeMounts:
         - name: postgres-storage
           mountPath: /var/lib/postgresql/data  # path inside the container where PostgreSQL stores its data
+        - name: init-scripts
+          mountPath: /docker-entrypoint-initdb.d  # path where PostgreSQL looks for initialization scripts to run on first startup
       volumes:
       - name: postgres-storage
         persistentVolumeClaim:
           claimName: postgres-pvc  # references the PVC defined in persistent-volume.yaml to persist data across restarts
+      - name: init-scripts
+        configMap:
+          name: postgres-init-config

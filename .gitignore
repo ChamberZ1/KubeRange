@@ -1,0 +1,24 @@
+k8s/database/secret.yaml
+
+# env / secrets
+.env
+.env.*
+*.secret.yaml
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-config
+data:
+  01-schema.sql: |
+    CREATE TABLE IF NOT EXISTS lab_types (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        image VARCHAR(255) NOT NULL,
+        port INTEGER NOT NULL,
+        description TEXT
+    );
+
+    CREATE TABLE IF NOT EXISTS lab_sessions (
+        id SERIAL PRIMARY KEY,
+        lab_type_id INTEGER REFERENCES lab_types(id),
+        pod_name VARCHAR(255),
+        url VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'running',
+        start_time TIMESTAMP DEFAULT NOW(),
+        expiration_time TIMESTAMP
+    );
+
+  02-seed.sql: |
+    INSERT INTO lab_types (name, image, port, description) VALUES
+    ('DVWA', 'vulnerables/web-dvwa', 80, 'Damn Vulnerable Web Application'),
+    ('Juice Shop', 'bkimminich/juice-shop', 3000, 'OWASP Juice Shop');
