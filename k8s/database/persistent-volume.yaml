@@ -1,0 +1,11 @@
+# requests persistent storage for the PostgreSQL database so data survives pod restarts
+apiVersion: v1  # specifies the API version for the PersistentVolumeClaim resource
+kind: PersistentVolumeClaim  # specifies type of resource
+metadata:
+  name: postgres-pvc  # name used by the deployment to reference this claim
+spec:
+  accessModes:
+  - ReadWriteOnce  # the volume can be mounted as read-write by a single node at a time
+  resources:
+    requests:
+      storage: 1Gi  # amount of storage being requested

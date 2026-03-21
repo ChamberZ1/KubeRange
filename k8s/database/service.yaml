@@ -1,0 +1,12 @@
+# exposes the PostgreSQL deployment so other pods in the cluster can connect to the database
+apiVersion: v1  # specifies the API version for the Service resource
+kind: Service  # specifies type of resource
+metadata:
+  name: postgres-service  # name other pods use to reach the database (e.g. as a hostname)
+spec:
+  selector:
+    app: postgres  # matches pods with this label so the service knows which pods to route traffic to
+  ports:
+  - protocol: TCP  # protocol used for the port mapping
+    port: 5432  # port the service listens on
+    targetPort: 5432  # port on the pod to forward traffic to (default PostgreSQL port)
