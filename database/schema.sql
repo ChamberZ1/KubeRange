@@ -1,3 +1,5 @@
+-- creates the actual tables in postgreSQL
+
 CREATE TABLE lab_types (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

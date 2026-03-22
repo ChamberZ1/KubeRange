@@ -7,7 +7,7 @@ from app.services.kubernetes_service import delete_lab_pod
 
 router = APIRouter()
 
-@router.delete("/stop/{session_id}", response_model=LabSessionResponse)
+@router.delete("/stop/{session_id}")
 def stop_lab(session_id: int, db: Session = Depends(get_db)):
 
     # look up the lab session in the database
@@ -20,6 +20,5 @@ def stop_lab(session_id: int, db: Session = Depends(get_db)):
 
     lab_session.status = "stopped"
     db.commit()
-    db.refresh(lab_session)
 
-    return lab_session
+    return {"message": "Lab stopped", "session_id": session_id}
