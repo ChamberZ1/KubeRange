@@ -1,0 +1,35 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+from app.main import get_db
+from app.db.models import LabType, LabSession
+from app.db.schemas import LabSessionResponse
+from app.services.kubernetes_service import create_lab_pod
+from datetime import datetime, timedelta
+
+router = APIRouter()
+
+@router.post("/start/{lab_type_id}", response_model=LabSessionResponse)  # pass the lab type as an URL param
+def start_lab(lab_type_id: int, db: Session = Depends(get_db)):
+    
+    # look up the lab type in the database
+    lab_type = db.query(LabType).filter(LabType.id == lab_type_id).first()
+    if not lab_type:
+        raise HTTPException(status_code=404, detail="Lab type not found")
+    
+    # tell kubernetes to spin up the pod
+    pod_name, url = create_lab_pod(lab_type.name, lab_type.image, lab_type.port)
+
+    # store the session in the database
+    lab_session = LabSession(
+        lab_type_id=lab_type_id,
+        pod_name=pod_name,
+        url=url,
+        status="running",
+        start_time=datetime.now(),
+        expiration_time=datetime.now() + timedelta(minutes=30)
+    )
+    db.add(lab_session)
+    db.commit()
+    db.refresh(lab_session)
+
+    return lab_session
