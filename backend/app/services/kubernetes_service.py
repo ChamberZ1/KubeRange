@@ -13,12 +13,13 @@ def create_lab_pod(lab_name: str, image: str, port: int):
     # create a unique pod name
     unique_id = str(uuid.uuid4())[:8]  # generate a unique ID
     pod_name = f"{lab_name.lower().replace(' ', '-')}-{unique_id}"  # e.g. "python-lab-1a2b3c4d"
+    lab_label = lab_name.lower().replace(' ', '-')
     
     # define the pod
     pod = client.V1Pod(  # K8s API object that represents a pod
         metadata=client.V1ObjectMeta(
             name=pod_name,
-            labels={"app": "kuberange-lab", "lab": lab_name.lower()}  
+            labels={"app": "kuberange-lab", "lab": lab_label}  
         ),
         spec=client.V1PodSpec( 
             containers=[

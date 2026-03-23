@@ -1,26 +1,11 @@
 from fastapi import FastAPI
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
+from app.routes import start_lab, stop_lab, status
 
 app = FastAPI(title="KubeRange API")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from app.db.models import Base
-
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+app.include_router(start_lab.router)
+app.include_router(stop_lab.router)
+app.include_router(status.router)
 
 @app.get("/health")
 def health_check():
