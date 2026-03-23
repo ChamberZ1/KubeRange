@@ -1,0 +1,5 @@
+-e ../shared
+sqlalchemy
+psycopg2-binary
+python-dotenv
+kubernetes
