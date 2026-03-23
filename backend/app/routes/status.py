@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.database import get_db
-from app.db.models import LabSession
+from kuberange_common.models import LabSession
 from app.db.schemas import LabSessionResponse
 
 router = APIRouter()
