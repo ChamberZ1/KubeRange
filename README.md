@@ -18,8 +18,8 @@ Kubernetes solves this by providing a control plane that continuously ensures th
 **Core concepts**
 
 1) Cluster - the entire Kubernetes environment, made up of machines called Nodes
-2) Node — an individual machine (VM or physical) where pods actually run
-3) Pod — the smallest unit; wraps one or more containers that run together
-4) Deployment — tells Kubernetes what to run, how many replicas, and how to handle updates. Manages pods for a given component
-5) Service (K8s object) — a stable network endpoint (DNS name + IP) that routes traffic to the right pods, since pods are ephemeral and their IPs change
-6) Namespace — a way to logically partition a cluster (e.g. prod vs dev)
+2) Node - an individual machine (VM or physical) where pods actually run
+3) Pod - the smallest unit; wraps one or more containers that run together
+4) Deployment - tells Kubernetes what to run, how many replicas, and how to handle updates. Manages pods for a given component
+5) Service (K8s object) - a stable network endpoint (DNS name + IP) that routes traffic to the right pods, since pods are ephemeral and their IPs change
+6) Namespace - a way to logically partition a cluster (e.g. prod vs dev)
