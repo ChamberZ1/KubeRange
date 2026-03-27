@@ -9,13 +9,17 @@ Kubernetes (K8s) is a container orchestration platform — it automates deployin
 
 **The problem it solves**
 
-You have an app made of multiple services (frontend, backend, database, etc.), each running in Docker containers. Manually managing those containers across multiple machines — keeping them running, scaling them up, updating them — doesn't scale. Kubernetes handles all of that for you.
+Modern applications are composed of multiple services such as frontend, backend, and databases, each typically running in its own container. In a real environment, these containers must be deployed across machines, restarted if they fail, scaled up or down based on demand, and kept updated without downtime. Networking between services must also remain reliable even as individual containers are created or destroyed.
+
+Managing this manually does not scale. It quickly becomes operationally complex, error-prone, and difficult to maintain.
+
+Kubernetes solves this by providing a control plane that continuously ensures the system matches a desired state. You declare what should be running and how it should behave, and Kubernetes handles scheduling, scaling, self-healing, service discovery, and rolling updates automatically
 
 **Core concepts**
 
-Cluster — the entire Kubernetes environment, made up of machines called Nodes
-Node — an individual machine (VM or physical) where pods actually run
-Pod — the smallest unit; wraps one or more containers that run together
-Deployment — tells Kubernetes what to run, how many replicas, and how to handle updates. Manages pods for a given component
-Service (K8s object) — a stable network endpoint (DNS name + IP) that routes traffic to the right pods, since pods are ephemeral and their IPs change
-Namespace — a way to logically partition a cluster (e.g. prod vs dev)
+1) Cluster - the entire Kubernetes environment, made up of machines called Nodes
+2) Node - an individual machine (VM or physical) where pods actually run
+3) Pod - the smallest unit; wraps one or more containers that run together
+4) Deployment - tells Kubernetes what to run, how many replicas, and how to handle updates. Manages pods for a given component
+5) Service (K8s object) - a stable network endpoint (DNS name + IP) that routes traffic to the right pods, since pods are ephemeral and their IPs change
+6) Namespace - a way to logically partition a cluster (e.g. prod vs dev)
