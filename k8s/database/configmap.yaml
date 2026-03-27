@@ -14,13 +14,15 @@ data:
 
     CREATE TABLE IF NOT EXISTS lab_sessions (
         id SERIAL PRIMARY KEY,
-        lab_type_id INTEGER REFERENCES lab_types(id),
+        lab_type_id INTEGER NOT NULL REFERENCES lab_types(id),
         pod_name VARCHAR(255),
         url VARCHAR(255),
-        status VARCHAR(50) DEFAULT 'running',
+        status VARCHAR(50) CHECK (status IN ('running', 'stopped', 'expired')) DEFAULT 'running',
         start_time TIMESTAMP DEFAULT NOW(),
         expiration_time TIMESTAMP
     );
+
+    CREATE UNIQUE INDEX IF NOT EXISTS one_running_lab ON lab_sessions (status) WHERE status = 'running';
 
   02-seed.sql: |
     INSERT INTO lab_types (name, image, port, description) VALUES
