@@ -1,6 +1,8 @@
 // api.ts - API client for interacting with the backend Lab Session Manager, 
 // tells the frontend how to call the backend endpoints and what data to expect back
-const BASE_URL = "http://localhost:8000";
+// In K8s, nginx proxies /api/* to the backend service.
+// In local dev, vite proxies /api/* to localhost:8000 (see vite.config.ts).
+const BASE_URL = "/api";
 
 export interface LabType {
   id: number;

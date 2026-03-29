@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [session, setSession] = useState<LabSession | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [startingLab, setStartingLab] = useState(false);
   const [timeLeft, setTimeLeft] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const canStart = !loading && selectedLabTypeId !== null && labTypes.length > 0;
@@ -71,6 +72,7 @@ export default function Dashboard() {
     }
     setError(null);
     setLoading(true);
+    setStartingLab(true);
     try {
       if (selectedLabTypeId === null) return;
       const s = await startLab(selectedLabTypeId);
@@ -78,7 +80,8 @@ export default function Dashboard() {
     } catch (error: unknown) {
       setError(getErrorMessage(error));
     } finally {
-      setLoading(false);
+      setLoading(false);  // Clear loading state
+      setStartingLab(false); // Clear startingLab state to hide the "Starting lab..." message
     }
   }
 
@@ -129,6 +132,12 @@ export default function Dashboard() {
 
       {error && (
         <p style={{ color: "red", marginTop: 16 }}>{error}</p>
+      )}
+
+      {startingLab && (
+        <p style={{ color: "#555", marginTop: 16, textAlign: "center" }}>
+          Starting lab, please wait — this can take up to a minute...
+        </p>
       )}
 
       {session && (
