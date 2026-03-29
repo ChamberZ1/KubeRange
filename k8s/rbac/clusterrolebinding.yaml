@@ -1,0 +1,13 @@
+# Connector
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding  # Binds the ClusterRole to the ServiceAccount, granting it the defined permissions across the cluster.
+metadata:
+  name: kuberange-backend
+subjects:
+  - kind: ServiceAccount
+    name: kuberange-backend
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: kuberange-backend
+  apiGroup: rbac.authorization.k8s.io

@@ -1,0 +1,21 @@
+# deploys the frontend
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend  # tells the Deployment which pods IT is responsible for managing. Must match template.labels.app:
+  template:
+    metadata:
+      labels:
+        app: frontend  # the actual label stamped onto each pod when it's created.
+    spec:
+      containers:
+        - name: frontend  # independent name for the container within pod.
+          image: kuberange-frontend:latest
+          imagePullPolicy: Never  # use the locally loaded minikube image
+          ports:
+            - containerPort: 80

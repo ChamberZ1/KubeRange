@@ -1,0 +1,14 @@
+# exposes the frontend deployment
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  type: NodePort  # type of Service that opens a specific port on every node in the cluster, allowing external traffic to reach the application by sending a request to any node's IP at that designated port
+  selector:
+    app: frontend  # must match the template.metadata.labels.app in deployment.yaml.
+  ports:
+    - port: 80  # port for pod-to-pod communication. Virtual routing rule. ther pods would reach this via frontend-service:80
+      targetPort: 80 # the actual port on the pod that the service should forward traffic to and nginx listens on. Must match containerPort in deployment.yaml.
+
+# External traffic enters via nodeport (30000-32767, assigned by k8s), gets forwarded directly to targetPort on the pod.
