@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: worker
+  template:
+    metadata:
+      labels:
+        app: worker
+    spec:
+      serviceAccountName: kuberange-backend  # reuse same service account (needs pod/service delete)
+      containers:
+        - name: worker
+          image: kuberange-worker:latest
+          imagePullPolicy: Never  # use the locally loaded minikube image; don't try to pull from internet.
+          env:
+            - name: DATABASE_URL  # inject DATABASE_URL env var into container.
+              valueFrom:
+                secretKeyRef:
+                  name: backend-secret
+                  key: DATABASE_URL
+
+# worker does not need to be exposed as a service as it is not accessed by any other microservice.
