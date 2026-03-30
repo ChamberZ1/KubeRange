@@ -38,6 +38,7 @@ def cleanup_expired_labs():
     finally:
         db.close()
 
+# triggered when run on k8s, which'll run this script in an infinite loop
 if __name__ == "__main__":
     print("Cleanup worker started")
     while True:
