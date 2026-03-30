@@ -17,9 +17,14 @@ Kubernetes solves this by providing a control plane that continuously ensures th
 
 **Core concepts**
 
-1) Cluster - the entire Kubernetes environment, made up of machines called Nodes
-2) Node - an individual machine (VM or physical) where pods actually run
-3) Pod - the smallest unit; wraps one or more containers that run together
-4) Deployment - tells Kubernetes what to run, how many replicas, and how to handle updates. Manages pods for a given component
-5) Service (K8s object) - a stable network endpoint (DNS name + IP) that routes traffic to the right pods, since pods are ephemeral and their IPs change
-6) Namespace - a way to logically partition a cluster (e.g. prod vs dev)
+Hiearchy: `Container < Pod < Node < Cluster`
+1) Cluster - the entire Kubernetes environment, made up of machines called Nodes.
+2) Node - an individual machine (VM or physical) where pods actually run.
+3) Pod - wraps one or more containers that run together and share the same network/storage.
+4) Container - holds the code package for a "microservice", a component of the full application.
+5) Deployment - Pod manager that tells Kubernetes what pod to run, how many, handle updates, and restart pods if they crash.
+6) Service - Virtual routing rule that exposes a pod to other pods or external traffic. It creates a stable network endpoint (DNS name + port) that routes traffic to the right pods, since pods are ephemeral and their IPs change.
+7) Namespace - a way to logically partition a cluster (e.g. prod vs dev)
+8) ConfigMap - stores non-sensitive configuration data (scripts, env vars, config files) that pods can consume
+9) Secret - same as ConfigMap but for sensitive data (passwords, tokens), stored with base64 encoding
+10) ServiceAccount + Role-Based Access Control (RBAC) - gives pods an identity and defines what K8s API resources they're allowed to access
