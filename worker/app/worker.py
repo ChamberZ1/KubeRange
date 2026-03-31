@@ -1,6 +1,6 @@
 import time
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
@@ -23,7 +23,7 @@ def cleanup_expired_labs():
     try:
         expired_sessions = db.query(LabSession).filter(
             LabSession.status == "running",
-            LabSession.expiration_time <= datetime.now()
+            LabSession.expiration_time <= datetime.now(timezone.utc).replace(tzinfo=None)
         ).all()
 
         for session in expired_sessions:

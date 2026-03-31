@@ -8,11 +8,7 @@ rules:  # Defines what actions the service account can perform on which resource
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["create", "delete", "get", "list"]
-  # Create and delete NodePort services per lab session
+  # Create and delete LoadBalancer services per lab session, and poll for ingress IP assignment
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["create", "delete", "get", "list"]
-  # Read node IPs to build lab URLs
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["list"]

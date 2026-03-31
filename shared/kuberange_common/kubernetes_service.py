@@ -38,27 +38,27 @@ def _wait_for_pod_running(v1, pod_name: str, timeout: int = 300):
         time.sleep(3)
     raise RuntimeError(f"Pod {pod_name} did not reach Running state within {timeout}s")
 
-# Asks the k8s API for node's IP
-# Used to build lab URL when running in-cluster
-def _get_node_ip():
-    v1 = client.CoreV1Api()
-    nodes = v1.list_node()
-    for addr_type in ("ExternalIP", "InternalIP"):
-        for node in nodes.items:
-            for addr in node.status.addresses:
-                if addr.type == addr_type:
-                    return addr.address
-    raise RuntimeError("Could not determine node IP address")
+# Polls the k8s API until the LoadBalancer service is assigned an ingress IP/hostname.
+# This requires `minikube tunnel` to be running on macOS Docker driver.
+def _wait_for_lb_ingress(v1, svc_name: str, timeout: int = 120) -> str:
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        svc = v1.read_namespaced_service(name=svc_name, namespace="default")
+        ingress_list = svc.status.load_balancer.ingress if svc.status.load_balancer else None
+        if ingress_list:
+            ip = ingress_list[0].ip or ingress_list[0].hostname
+            if ip:
+                return ip
+        time.sleep(2)
+    raise RuntimeError(
+        f"LoadBalancer {svc_name} did not receive an ingress IP within {timeout}s. "
+        "Make sure `minikube tunnel` is running in a separate terminal."
+    )
 
-# Decides how to build reachable URL for lab
-# Local: `minikube service <svc-name> --url` (so my mac can reach the sservice when using Docker driver)
-# In-cluster: `http://<node-ip>:<node-port>` (skips minikube since backend pod is already inside cluster network)
-def _get_service_url(svc_name: str, pod_name: str, node_port: int) -> str:
-    """
-    Local dev (not in-cluster): use `minikube service --url` tunnel so the URL is
-    reachable from macOS when using the Docker driver.
-    In-cluster: use the node IP directly (requires `minikube tunnel` on macOS Docker driver).
-    """
+# Decides how to build reachable URL for lab.
+# Local (not in-cluster): `minikube service <svc-name> --url` so the Mac can reach it via Docker driver tunnel.
+# In-cluster: wait for LoadBalancer ingress IP assigned by `minikube tunnel`, then return http://<ip>:<port>.
+def _get_service_url(svc_name: str, pod_name: str, v1, port: int) -> str:
     in_cluster = "KUBERNETES_SERVICE_HOST" in os.environ
 
     if not in_cluster and shutil.which("minikube"):
@@ -81,14 +81,15 @@ def _get_service_url(svc_name: str, pod_name: str, node_port: int) -> str:
                 if proc.poll() is not None:
                     break
             proc.kill()
-            print(f"Warning: minikube tunnel timed out for {svc_name}, falling back to node IP")
+            print(f"Warning: minikube tunnel timed out for {svc_name}, falling back to LB ingress")
         except Exception as e:
-            print(f"Warning: minikube service URL failed ({e}), falling back to node IP")
+            print(f"Warning: minikube service URL failed ({e}), falling back to LB ingress")
 
-    node_ip = _get_node_ip()
-    return f"http://{node_ip}:{node_port}"
+    # In-cluster: wait for minikube tunnel to assign an external IP to the LoadBalancer service
+    lb_ip = _wait_for_lb_ingress(v1, svc_name)
+    return f"http://{lb_ip}:{port}"
 
-# function to create a pod and NodePort service for a lab session
+# function to create a pod and LoadBalancer service for a lab session
 def create_lab_pod(lab_name: str, image: str, port: int):
 
     _load_k8s_config()
@@ -122,17 +123,22 @@ def create_lab_pod(lab_name: str, image: str, port: int):
     except ApiException as e:
         raise RuntimeError(f"Kubernetes error creating pod: {e.status} {e.reason}") from e
 
-    # create a NodePort service that selects pods with the unique session label
+    # create a LoadBalancer service that selects pods with the unique session label.
+    # LoadBalancer type is required so that `minikube tunnel` can assign an external IP
+    # reachable from macOS when using the Docker driver.
+    # Privileged ports (< 1024) can't be bound by minikube tunnel on macOS, so expose
+    # them on port+8000 externally (e.g. port 80 → 8080, port 443 → 8443).
+    external_port = port + 8000 if port < 1024 else port
     svc = client.V1Service(
         metadata=client.V1ObjectMeta(name=svc_name),
         spec=client.V1ServiceSpec(
-            type="NodePort",
+            type="LoadBalancer",
             selector={"session": pod_name},
-            ports=[client.V1ServicePort(port=port, target_port=port)]
+            ports=[client.V1ServicePort(port=external_port, target_port=port)]
         )
     )
     try:
-        created_svc = v1.create_namespaced_service(namespace="default", body=svc)
+        v1.create_namespaced_service(namespace="default", body=svc)
     except ApiException as e:
         try:
             v1.delete_namespaced_pod(name=pod_name, namespace="default")
@@ -140,9 +146,8 @@ def create_lab_pod(lab_name: str, image: str, port: int):
             pass
         raise RuntimeError(f"Kubernetes error creating service: {e.status} {e.reason}") from e
 
-    node_port = created_svc.spec.ports[0].node_port
     _wait_for_pod_running(v1, pod_name)
-    url = _get_service_url(svc_name, pod_name, node_port)
+    url = _get_service_url(svc_name, pod_name, v1, external_port)
 
     return pod_name, url
 

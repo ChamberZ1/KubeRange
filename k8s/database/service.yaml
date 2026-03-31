@@ -11,6 +11,8 @@ spec:
     port: 5432  # port the service listens on
     targetPort: 5432  # port on the pod to forward traffic to (default PostgreSQL port)
 
+# ClusterIP
+
 # kubectl apply -f k8s/database/persistent-volume.yaml
 # kubectl apply -f k8s/database/deployment.yaml
 # kubectl apply -f k8s/database/service.yaml

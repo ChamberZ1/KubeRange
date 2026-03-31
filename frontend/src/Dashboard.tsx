@@ -124,7 +124,7 @@ export default function Dashboard() {
           <button onClick={handleStart} disabled={!canStart}>
             Start
           </button>
-          <button onClick={handleStop} disabled={loading || !session}>
+          <button onClick={handleStop} disabled={loading || !session || session.status !== "running"}>
             Stop
           </button>
         </div>
@@ -147,7 +147,6 @@ export default function Dashboard() {
             <tbody>
               <tr><td><b>Session ID</b></td><td>{session.id}</td></tr>
               <tr><td><b>Status</b></td><td>{session.status}</td></tr>
-              <tr><td><b>Pod Name</b></td><td>{session.pod_name ?? "—"}</td></tr>
               <tr><td><b>URL</b></td><td>{session.url ? <a href={session.url} target="_blank" rel="noreferrer">{session.url}</a> : "—"}</td></tr>
               <tr><td><b>Start Time</b></td><td>{session.start_time ?? "—"}</td></tr>
               <tr><td><b>Expiration Time</b></td><td>{session.expiration_time ?? "—"}</td></tr>

@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from app.db.database import get_db
 from kuberange_common.models import LabType, LabSession
 from app.db.schemas import LabSessionResponse
-from kuberange_common.kubernetes_service import create_lab_pod, delete_lab_pod
-from datetime import datetime, timedelta
+from kuberange_common.kubernetes_service import create_lab_pod
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter()
 
@@ -16,7 +16,7 @@ def start_lab(lab_type_id: int, db: Session = Depends(get_db)):
     # so the unique index doesn't block a new start after expiry
     expired = db.query(LabSession).filter(
         LabSession.status == "running",
-        LabSession.expiration_time <= datetime.now()
+        LabSession.expiration_time <= datetime.now(timezone.utc).replace(tzinfo=None)
     ).first()
     if expired:
         expired.status = "expired"
@@ -34,8 +34,8 @@ def start_lab(lab_type_id: int, db: Session = Depends(get_db)):
     lab_session = LabSession(
         lab_type_id=lab_type_id,
         status="running",
-        start_time=datetime.now(),
-        expiration_time=datetime.now() + timedelta(minutes=30)
+        start_time=datetime.now(timezone.utc).replace(tzinfo=None),
+        expiration_time=datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=30)
     )
     db.add(lab_session)
     try:
