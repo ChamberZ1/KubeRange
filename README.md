@@ -1,5 +1,5 @@
 # KubeRange
-A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight ELK stack implementation for SIEM experience — collect and analyze attack logs generated during each lab session.
+A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight ELK stack implementation for SIEM experience - collect and analyze attack logs generated during each lab session.
 
 ## Startup
 
@@ -92,3 +92,17 @@ Other local-dev simplifications vs production:
 - Elasticsearch JVM heap capped at 1GB (sized for a 4GB minikube instance)
 - No persistent volume — log history is lost if the Elasticsearch pod restarts. In production you'd add a PersistentVolumeClaim so Elasticsearch data survives pod restarts. It was omitted here because minikube's default storage provisioner requires configuring a hostPath volume pointing to a directory inside the minikube VM — extra setup that adds complexity without adding learning value for a local dev environment.
 - Filebeat filtered to lab pods only, not full cluster observability
+
+---
+
+## Future Work
+
+**User authentication** - currently anyone can access the platform. A users table and login system would unlock per-user session history, multi-user support, and meaningful pod naming (e.g. `dvwa-username` instead of `dvwa-6afc0926`).
+
+**Ingress controller** - right now services are exposed via NodePort/LoadBalancer through `minikube tunnel`, resulting in multiple `127.0.0.1:<random_port>` URLs. An Ingress controller would consolidate everything behind a single host (e.g. `kuberange.local`), with path-based routing to the frontend, backend, and Kibana. Lab pods would get subdomain-based URLs (e.g. `dvwa-abc123.kuberange.local`) via dynamically created Ingress rules. This is most valuable when deploying to a real cluster (EKS, GKE) — on minikube it adds complexity without much practical benefit.
+
+**Namespaces** - currently everything runs in the `default` namespace. Separating into `labs`, `platform`, and `observability` namespaces would give cleaner RBAC scoping and make `kubectl` output easier to read.
+
+**More lab types** - add more intentionally vulnerable applications beyond DVWA and Juice Shop.
+
+**Persistent Elasticsearch storage** - add a PersistentVolumeClaim to Elasticsearch so logs survive pod restarts.
