@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticsearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+          ports:
+            - containerPort: 9200  # REST API — used by Filebeat to ship logs and Kibana to query
+          env:
+            - name: discovery.type
+              value: single-node  # disables multi-node cluster formation, required for local single-instance setup
+            - name: xpack.security.enabled
+              value: "false"  # disables TLS and auth — fine for local dev, never do this in production
+            - name: ES_JAVA_OPTS
+              value: "-Xms1g -Xmx1g"  # 1GB heap — reasonable for a 4GB minikube instance
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"  # heap is 1GB but ES also needs off-heap memory for caches/buffers; 1500Mi was too tight
+              cpu: "1000m"

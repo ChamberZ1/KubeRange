@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: DaemonSet  # runs exactly one Filebeat pod per node — ensures all node's container logs are collected
+metadata:
+  name: filebeat
+spec:
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: filebeat  # needs K8s API access for autodiscover (pod/namespace metadata)
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:8.13.0  # must match Elasticsearch version
+          args: ["-c", "/etc/filebeat.yml", "-e"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName  # passes the node name into filebeat config for autodiscover
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "100m"
+            limits:
+              memory: "200Mi"
+              cpu: "200m"
+          volumeMounts:
+            - name: config
+              mountPath: /etc/filebeat.yml
+              subPath: filebeat.yml
+              readOnly: true
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true  # Filebeat only reads logs, never writes
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true  # actual log content lives here; /var/log/containers symlinks point here
+      volumes:
+        - name: config
+          configMap:
+            name: filebeat-config
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers  # mounted from the node so Filebeat can read all container logs
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers

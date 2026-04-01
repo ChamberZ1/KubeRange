@@ -4,6 +4,9 @@ FROM python:3.12-slim
 # Set working dir.
 WORKDIR /app
 
+# Disable Python output buffering so print() statements appear in kubectl logs immediately
+ENV PYTHONUNBUFFERED=1
+
 # Install shared package first (build context is project root)
 COPY shared/ /shared/
 RUN pip install --no-cache-dir /shared/

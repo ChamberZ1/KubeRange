@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+data:
+  filebeat.yml: |
+    filebeat.autodiscover:
+      providers:
+        - type: kubernetes
+          # Autodiscover watches the K8s API for new pods and automatically
+          # starts tailing their logs when they appear.
+          node: ${NODE_NAME}
+          # hints.enabled is intentionally omitted — when enabled, Filebeat collects from all pods
+          # by default and template conditions only add extra config rather than restricting collection.
+          # Without hints, only pods matching a template condition below are collected.
+          templates:
+            - condition:
+                contains:
+                  kubernetes.labels.app: "kuberange-lab"  # only collect logs from lab pods (DVWA, Juice Shop)
+              config:
+                - type: container
+                  paths:
+                    - /var/log/containers/*${data.kubernetes.container.id}*.log  # path on the node where container logs are stored
+
+    processors:
+      - add_kubernetes_metadata:  # enriches each log event with pod name, namespace, labels etc.
+          host: ${NODE_NAME}
+          matchers:
+            - logs_path:
+                logs_path: "/var/log/containers/"
+
+    output.elasticsearch:
+      hosts: ["http://elasticsearch-service:9200"]
+      index: "kuberange-labs-%{+yyyy.MM.dd}"  # daily index, e.g. kuberange-labs-2026.03.31
+
+    setup.ilm.enabled: false  # disable index lifecycle management (requires license in newer versions)
+    setup.template.name: "kuberange-labs"
+    setup.template.pattern: "kuberange-labs-*"

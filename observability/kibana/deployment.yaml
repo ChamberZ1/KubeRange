@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.13.0  # must match Elasticsearch version exactly
+          ports:
+            - containerPort: 5601  # Kibana web UI
+          env:
+            - name: ELASTICSEARCH_HOSTS
+              value: "http://elasticsearch-service:9200"  # points to Elasticsearch ClusterIP service
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"

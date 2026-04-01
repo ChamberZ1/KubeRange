@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana-service
+spec:
+  type: NodePort  # externally accessible via minikube service kibana-service --url
+  selector:
+    app: kibana
+  ports:
+    - port: 5601
+      targetPort: 5601

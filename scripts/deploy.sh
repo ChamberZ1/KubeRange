@@ -22,10 +22,22 @@ kubectl apply -f k8s/backend/
 kubectl apply -f k8s/worker/
 kubectl apply -f k8s/frontend/
 
+echo "==> Applying observability manifests..."
+kubectl apply -f observability/filebeat/rbac.yaml
+kubectl apply -f observability/elasticsearch/
+kubectl apply -f observability/kibana/
+kubectl apply -f observability/filebeat/
+# Filebeat mounts its config via subPath — Kubernetes does not auto-update subPath mounts
+# when a ConfigMap changes, so we must restart the DaemonSet explicitly on every deploy.
+kubectl rollout restart daemonset/filebeat
+
 echo "==> Restarting deployments to pick up new images..."
 kubectl rollout restart deployment/backend deployment/worker deployment/frontend
 kubectl rollout status deployment/backend deployment/worker deployment/frontend
 
 echo ""
-echo "==> Done! Getting frontend URL..."
-minikube service frontend-service --url
+echo "==> Done! To get service URLs, run each in a separate terminal"
+echo "    (on macOS/Docker driver, minikube service --url creates a persistent tunnel):"
+echo ""
+echo "    minikube service frontend-service --url"
+echo "    minikube service kibana-service --url"
