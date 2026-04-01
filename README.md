@@ -1,5 +1,5 @@
 # KubeRange
-I LEARN KUBERNET FOR JAWB
+A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight ELK stack implementation for SIEM experience — collect and analyze attack logs generated during each lab session.
 
 ## Startup
 
