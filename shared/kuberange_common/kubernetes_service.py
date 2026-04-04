@@ -1,3 +1,6 @@
+# only file that talks directly to Kubernetes API to create/delete pods and services for labs, and to get the assigned URL for a lab session.
+# used/shared by backend and worker
+# created to avoid duplicate code
 import os
 import select
 import subprocess
@@ -163,6 +166,7 @@ def delete_lab_pod(pod_name: str):
         del _tunnel_processes[pod_name]
 
     v1 = client.CoreV1Api()
+    # delete pod
     try:
         v1.delete_namespaced_pod(name=pod_name, namespace="default")
     except ApiException as e:
