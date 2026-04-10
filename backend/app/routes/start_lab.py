@@ -35,7 +35,7 @@ def start_lab(lab_type_id: int, db: Session = Depends(get_db)):
         lab_type_id=lab_type_id,
         status="running",
         start_time=datetime.now(timezone.utc).replace(tzinfo=None),
-        expiration_time=datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=30)
+        expiration_time=datetime.now(timezone.utc).replace(tzinfo=None) + timedelta(minutes=60)
     )
     db.add(lab_session)
     try:
