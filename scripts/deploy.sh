@@ -4,6 +4,16 @@
 
 set -e
 
+echo "==> Checking for required secret files..."
+missing=0
+for f in k8s/database/secret.yaml k8s/backend/secret.yaml; do
+  if [ ! -f "$f" ]; then
+    echo "    MISSING: $f  (copy ${f}.example to $f and adjust values)"
+    missing=1
+  fi
+done
+[ $missing -eq 1 ] && exit 1
+
 echo "==> Switching to minikube's Docker daemon..."
 # Building directly inside minikube's daemon means images are immediately available
 # to Kubernetes without a separate load step, and avoids stale-cache issues with

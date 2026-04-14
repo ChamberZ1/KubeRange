@@ -1,6 +1,19 @@
 # KubeRange
 A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight EFK stack implementation for SIEM experience - collect and analyze attack logs generated during each lab session.
 
+## Setup (one-time)
+
+Secret files are gitignored and must be created before the first deploy. The `.example` files contain working defaults for local development — just copy them:
+
+```bash
+cp k8s/database/secret.yaml.example k8s/database/secret.yaml
+cp k8s/backend/secret.yaml.example  k8s/backend/secret.yaml
+```
+
+To use a custom database password, edit `k8s/database/secret.yaml` (base64-encoded value) and update the `DATABASE_URL` in `k8s/backend/secret.yaml` to match.
+
+---
+
 ## Startup
 
 **Prerequisites:** Docker Desktop running, minikube installed, kubectl installed.
