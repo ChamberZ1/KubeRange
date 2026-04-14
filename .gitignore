@@ -4,6 +4,7 @@ k8s/backend/secret.yaml
 # env / secrets
 .env
 .env.*
+!.env.example
 *.secret.yaml
 
 # Python
