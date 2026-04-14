@@ -3,7 +3,13 @@ A Kubernetes and Docker-based platform that spins up vulnerable web applications
 
 ## Startup
 
-**Prerequisites:** Docker Desktop running, minikube installed, kubectl installed.
+**Prerequisites:** Docker Desktop or Docker Engine running, minikube installed, kubectl installed.
+
+**One-time setup — copy the environment file:**
+```bash
+cp .env.example .env
+```
+The default values in `.env.example` are pre-configured to match the Kubernetes manifests — leave them as-is. The `.env` file is loaded by the backend and worker when running locally; in a K8s deployment the cluster reads credentials from its own Secrets, which are derived from these same defaults.
 
 **First time (or after `minikube delete`):**
 ```bash
