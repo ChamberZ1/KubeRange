@@ -1,5 +1,5 @@
 # KubeRange
-A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight ELK stack implementation for SIEM experience - collect and analyze attack logs generated during each lab session.
+A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight EFK stack implementation for SIEM experience - collect and analyze attack logs generated during each lab session.
 
 ## Startup
 
@@ -45,7 +45,7 @@ Note: the worker automatically cleans up expired lab pods and services while run
 ---
 
 ## Diagram
-View [KubeRange.pdf](KubeRange.pdf)
+![KubeRange Diagram](KubeRange.png)
 
 ## K8s
 Kubernetes (K8s) is a container orchestration platform — it automates deploying, scaling, and managing containerized applications.
@@ -84,7 +84,7 @@ KubeRange uses a Filebeat → Elasticsearch → Kibana pipeline to collect and v
 
 **How this deviates from a standard ELK stack**
 
-A production ELK deployment typically uses Logstash (the "L") between Filebeat and Elasticsearch for parsing, filtering, and transforming log events before indexing. KubeRange ships Filebeat directly to Elasticsearch (no Logstash), which is a simpler and lighter setup sometimes called an "EFK-lite" or "Beats stack." This is fine for local dev — the raw container logs are still fully searchable in Kibana. The tradeoff is that log parsing (e.g. extracting structured fields from Apache access log lines) requires either Elasticsearch ingest pipelines or Filebeat processors rather than Logstash config.
+A production ELK deployment typically uses Logstash (the "L") between Filebeat and Elasticsearch for parsing, filtering, and transforming log events before indexing. KubeRange ships Filebeat directly to Elasticsearch (no Logstash), implementing the EFK stack — the lighter alternative to ELK that's well-suited for container environments. This is fine for local dev — the raw container logs are still fully searchable in Kibana. The tradeoff is that log parsing (e.g. extracting structured fields from Apache access log lines) requires either Elasticsearch ingest pipelines or Filebeat processors rather than Logstash config.
 
 Other local-dev simplifications vs production:
 
