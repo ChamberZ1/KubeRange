@@ -45,7 +45,7 @@ Note: the worker automatically cleans up expired lab pods and services while run
 ---
 
 ## Diagram
-[KubeRange Diagram](KubeRange.png)
+![KubeRange Diagram](KubeRange.png)
 
 ## K8s
 Kubernetes (K8s) is a container orchestration platform — it automates deploying, scaling, and managing containerized applications.
