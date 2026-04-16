@@ -1,6 +1,9 @@
 # KubeRange
 A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight EFK stack implementation for SIEM experience - collect and analyze attack logs generated during each lab session.
 
+## Demo
+Video demo of setup [here](https://youtu.be/VeUNLNDa2kE).
+
 ## Setup (one-time)
 
 Secret files are gitignored and must be created before the first deploy. The `.example` files contain working defaults for local development — just copy them:
@@ -40,6 +43,8 @@ Frontend and Kibana URLs:
 minikube service frontend-service --url
 minikube service kibana-service --url
 ```
+
+> **Note:** Elasticsearch takes 60–90 seconds to fully initialize after the pod shows `Running`. Kibana will be unavailable until then and may show crash-loop restarts in the meantime — this is normal. Check readiness with `kubectl get pods -w`.
 
 ---
 
