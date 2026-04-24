@@ -2,7 +2,8 @@
 A Kubernetes and Docker-based platform that spins up vulnerable web applications (DVWA, Juice Shop) as isolated lab environments for practicing web exploitation. Includes a lightweight EFK stack implementation for SIEM experience - collect and analyze attack logs generated during each lab session.
 
 ## Demo
-Video demo of setup [here](https://youtu.be/VeUNLNDa2kE).
+[Video](https://youtu.be/VeUNLNDa2kE) demo of setup
+[Video](https://youtu.be/e0H5VrVZyf4) demo of simple brute force attack on a DVWA instance
 
 ## Setup (one-time)
 
